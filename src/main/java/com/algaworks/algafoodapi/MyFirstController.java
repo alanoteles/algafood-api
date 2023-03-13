@@ -13,8 +13,6 @@ public class MyFirstController {
 
   public MyFirstController(ClientActivationService clientActivationService) {
     this.clientActivationService = clientActivationService;
-
-    System.out.println("MyFirstController: " + clientActivationService);
   }
 
   @GetMapping("/hello")
