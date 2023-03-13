@@ -1,8 +1,10 @@
 package com.algaworks.algafoodapi.di.notification;
 
 import com.algaworks.algafoodapi.di.model.Client;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+@Qualifier("urgent")
 @Component
 public class SMSNotificator implements Notificator {
 

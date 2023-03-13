@@ -3,13 +3,14 @@ package com.algaworks.algafoodapi.di.service;
 import com.algaworks.algafoodapi.di.model.Client;
 import com.algaworks.algafoodapi.di.notification.Notificator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 @Component
 public class ClientActivationService {
 
+    @Qualifier("urgent")
     @Autowired
     private Notificator notificator;
 
@@ -20,8 +21,4 @@ public class ClientActivationService {
         notificator.notificate(client, "Your register is active!");
     }
 
-
-//    public void setNotificator(Notificator notificator) {
-//        this.notificator = notificator;
-//    }
 }
