@@ -11,15 +11,13 @@ import java.util.List;
 public class ClientActivationService {
 
     @Autowired
-    private List<Notificator> notificators;
+    private Notificator notificator;
 
     public void activate(Client client) {
 
         client.setActive();
 
-        for (Notificator notificator : notificators) {
-            notificator.notificate(client, "Your register is active!");
-        }
+        notificator.notificate(client, "Your register is active!");
     }
 
 

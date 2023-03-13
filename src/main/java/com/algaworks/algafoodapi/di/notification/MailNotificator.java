@@ -1,8 +1,10 @@
 package com.algaworks.algafoodapi.di.notification;
 
 import com.algaworks.algafoodapi.di.model.Client;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+@Primary
 @Component
 public class MailNotificator implements Notificator {
 
