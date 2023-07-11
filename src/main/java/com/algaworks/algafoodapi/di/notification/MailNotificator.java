@@ -12,8 +12,10 @@ import org.springframework.stereotype.Component;
 public class MailNotificator implements Notificator {
 
     public MailNotificator(){
+
         System.out.println("MailNotificator PROD");
     }
+
     @Override
     public void notificate(Client client, String msg) {
 
