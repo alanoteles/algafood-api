@@ -2,6 +2,7 @@ package com.algaworks.algafoodapi.jpa;
 
 import com.algaworks.algafoodapi.AlgafoodApiApplication;
 import com.algaworks.algafoodapi.domain.model.Kitchen;
+import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
@@ -14,9 +15,9 @@ public class SearchKitchenMain {
                 .web(WebApplicationType.NONE)
                 .run(args);
 
-        KitchenJpa kitchenJpa = applicationContext.getBean(KitchenJpa.class);
+        KitchenRepository kitchenRepository = applicationContext.getBean(KitchenRepository.class);
 
-        Kitchen kitchen = kitchenJpa.search(2L);
+        Kitchen kitchen = kitchenRepository.search(2L);
 
         System.out.printf("%d - %s\n", kitchen.getId(), kitchen.getName());
     }
