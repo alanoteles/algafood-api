@@ -1,6 +1,8 @@
 package com.algaworks.algafoodapi.infrastructure.repository;
 
+import com.algaworks.algafoodapi.domain.model.Estate;
 import com.algaworks.algafoodapi.domain.model.Kitchen;
+import com.algaworks.algafoodapi.domain.repository.EstateRepository;
 import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,31 +12,31 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Component
-public class KitchenRepositoryImpl implements KitchenRepository {
+public class EstateRepositoryImpl implements EstateRepository {
 
     @PersistenceContext
     private EntityManager manager;
 
     @Override
-    public List<Kitchen> list(){
-        return manager.createQuery("from Kitchen", Kitchen.class).getResultList();
+    public List<Estate> list(){
+        return manager.createQuery("from Estate", Estate.class).getResultList();
     }
 
     @Transactional
     @Override
-    public Kitchen save(Kitchen kitchen) {
-        return manager.merge(kitchen);
+    public Estate save(Estate estate) {
+        return manager.merge(estate);
     }
 
     @Override
-    public Kitchen search(Long id) {
-        return manager.find(Kitchen.class, id);
+    public Estate search(Long id) {
+        return manager.find(Estate.class, id);
     }
 
     @Transactional
     @Override
-    public void delete(Kitchen kitchen) {
-        kitchen = search(kitchen.getId());
-        manager.remove(kitchen);
+    public void delete(Estate estate) {
+        estate = search(estate.getId());
+        manager.remove(estate);
     }
 }

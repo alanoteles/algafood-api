@@ -3,13 +3,15 @@ package com.algaworks.algafoodapi.domain.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.*;
-import java.math.BigDecimal;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Restaurant {
+public class Estate {
 
     @EqualsAndHashCode.Include
     @Id
@@ -18,12 +20,4 @@ public class Restaurant {
 
     private String name;
 
-    @Column(name = "delivery_fee")
-    private BigDecimal deliveryFee;
-
-    @ManyToOne
-    private Kitchen kitchen;
-
-    @ManyToOne
-    private PaymentMethod paymentMethod;
 }
