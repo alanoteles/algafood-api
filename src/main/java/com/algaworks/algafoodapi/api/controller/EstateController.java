@@ -23,6 +23,7 @@ public class EstateController {
         return estateRepository.list();
     }
 
+
     @GetMapping("/{estateId}")
     public Estate search(@PathVariable Long estateId) {
         return estateRepository.search(estateId);
