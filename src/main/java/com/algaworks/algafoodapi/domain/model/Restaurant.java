@@ -2,6 +2,8 @@ package com.algaworks.algafoodapi.domain.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -22,6 +24,7 @@ public class Restaurant {
     private BigDecimal deliveryFee;
 
     @ManyToOne
+//    @OnDelete(action = OnDeleteAction.CASCADE)
     private Kitchen kitchen;
 
     @ManyToOne
