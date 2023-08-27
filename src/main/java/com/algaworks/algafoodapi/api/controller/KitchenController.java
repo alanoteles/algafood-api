@@ -1,11 +1,12 @@
 package com.algaworks.algafoodapi.api.controller;
 
-import com.algaworks.algafoodapi.api.model.KitchenXmlWrapper;
+import com.algaworks.algafoodapi.domain.exception.EntityBeingUsedException;
+import com.algaworks.algafoodapi.domain.exception.EntityNotFoundException;
 import com.algaworks.algafoodapi.domain.model.Kitchen;
 import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
+import com.algaworks.algafoodapi.domain.service.KitchenRegisterService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +21,15 @@ public class KitchenController {
     @Autowired
     private KitchenRepository kitchenRepository;
 
+    @Autowired
+    private KitchenRegisterService kitchenRegisterService;
+
 //    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping
     public List<Kitchen> list(){
         return kitchenRepository.list();
     };
 
-    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-    public KitchenXmlWrapper listXml(){
-        return new KitchenXmlWrapper(kitchenRepository.list());
-    }
 
 
 //    @ResponseStatus(HttpStatus.CREATED)
@@ -57,7 +57,7 @@ public class KitchenController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Kitchen add(@RequestBody Kitchen kitchen){
-        return kitchenRepository.save(kitchen);
+        return kitchenRegisterService.save(kitchen);
     }
 
     @PutMapping("/{kitchenId}")
@@ -69,7 +69,7 @@ public class KitchenController {
         if( currentKitchen != null) {
             BeanUtils.copyProperties(kitchen, currentKitchen, "id");
 
-            currentKitchen = kitchenRepository.save(currentKitchen);
+            currentKitchen = kitchenRegisterService.save(currentKitchen);
 
             return ResponseEntity.ok(currentKitchen);
         }
@@ -79,16 +79,14 @@ public class KitchenController {
 
     @DeleteMapping("/{kitchenId}")
     public ResponseEntity<Kitchen> delete(@PathVariable Long kitchenId) {
-
         try {
-            Kitchen kitchen = kitchenRepository.search(kitchenId);
-            System.out.println(kitchenId);
-            if (kitchen != null) {
-                kitchenRepository.delete(kitchen);
-                return ResponseEntity.noContent().build();
-            }
+            kitchenRegisterService.delete(kitchenId);
+            return ResponseEntity.noContent().build();
+
+        } catch (EntityNotFoundException e){
             return ResponseEntity.notFound().build();
-        } catch (DataIntegrityViolationException e){
+
+        } catch (EntityBeingUsedException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
