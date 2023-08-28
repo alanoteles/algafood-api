@@ -19,6 +19,11 @@ public class Kitchen {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //    @JsonIgnore
+//    @JsonProperty("title")
+    @Column(nullable = false)
+    private String name;
+
     public Long getId() {
         return id;
     }
@@ -26,9 +31,6 @@ public class Kitchen {
         this.id = id;
     }
 
-//    @JsonIgnore
-//    @JsonProperty("title")
-    @Column(nullable = false)
-    private String name;
+
 
 }

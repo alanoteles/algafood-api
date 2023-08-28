@@ -4,15 +4,13 @@ import com.algaworks.algafoodapi.domain.model.Estate;
 import com.algaworks.algafoodapi.domain.repository.EstateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/estate", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/estates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EstateController {
 
     @Autowired
@@ -25,7 +23,12 @@ public class EstateController {
 
 
     @GetMapping("/{estateId}")
-    public Estate search(@PathVariable Long estateId) {
-        return estateRepository.search(estateId);
+    public ResponseEntity<Estate> search(@PathVariable Long estateId) {
+        Estate estate = estateRepository.search(estateId);
+
+        if(estate != null){
+            return ResponseEntity.ok(estate);
+        }
+        return ResponseEntity.notFound().build();
     }
 }
