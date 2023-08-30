@@ -10,5 +10,5 @@ public interface PaymentMethodRepository {
     List<PaymentMethod> list();
     PaymentMethod search(Long id);
     PaymentMethod save(PaymentMethod paymentMethod);
-    void delete(PaymentMethod paymentMethod);
+    void delete(Long id);
 }

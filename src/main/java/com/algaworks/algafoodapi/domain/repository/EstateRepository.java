@@ -10,5 +10,5 @@ public interface EstateRepository {
     List<Estate> list();
     Estate search(Long id);
     Estate save(Estate estate);
-    void delete(Estate estate);
+    void delete(Long id);
 }

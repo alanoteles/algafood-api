@@ -4,6 +4,7 @@ import com.algaworks.algafoodapi.domain.model.Estate;
 import com.algaworks.algafoodapi.domain.model.Kitchen;
 import com.algaworks.algafoodapi.domain.repository.EstateRepository;
 import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +36,13 @@ public class EstateRepositoryImpl implements EstateRepository {
 
     @Transactional
     @Override
-    public void delete(Estate estate) {
-        estate = search(estate.getId());
+    public void delete(Long id) {
+        Estate estate = search(id);
+
+        if (estate == null){
+            throw new EmptyResultDataAccessException(1);
+        }
+
         manager.remove(estate);
     }
 }

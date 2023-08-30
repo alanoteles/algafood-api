@@ -1,9 +1,8 @@
 package com.algaworks.algafoodapi.infrastructure.repository;
 
-import com.algaworks.algafoodapi.domain.model.Kitchen;
 import com.algaworks.algafoodapi.domain.model.PaymentMethod;
-import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
 import com.algaworks.algafoodapi.domain.repository.PaymentMethodRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +34,12 @@ public class PaymentMethodRepositoryImpl implements PaymentMethodRepository {
 
     @Transactional
     @Override
-    public void delete(PaymentMethod paymentMethod) {
-        paymentMethod = search(paymentMethod.getId());
+    public void delete(Long id) {
+        PaymentMethod paymentMethod = search(id);
+
+        if (paymentMethod == null){
+            throw new EmptyResultDataAccessException(1);
+        }
         manager.remove(paymentMethod);
     }
 }

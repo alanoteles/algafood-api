@@ -22,9 +22,9 @@ public class KitchenRegisterService {
     }
 
     public void delete(Long id) {
-//        Kitchen kitchen = kitchenRepository.search(id);
         try {
             kitchenRepository.delete(id);
+
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException(
                     String.format("Could not found a kitchen record with this %d", id));

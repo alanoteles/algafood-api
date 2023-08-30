@@ -68,12 +68,10 @@ public class KitchenController {
 
         if( currentKitchen != null) {
             BeanUtils.copyProperties(kitchen, currentKitchen, "id");
-
             currentKitchen = kitchenRegisterService.save(currentKitchen);
 
             return ResponseEntity.ok(currentKitchen);
         }
-
         return ResponseEntity.notFound().build();
     }
 

@@ -1,9 +1,9 @@
 package com.algaworks.algafoodapi.infrastructure.repository;
 
+import com.algaworks.algafoodapi.domain.exception.EntityNotFoundException;
 import com.algaworks.algafoodapi.domain.model.City;
-import com.algaworks.algafoodapi.domain.model.Estate;
 import com.algaworks.algafoodapi.domain.repository.CityRepository;
-import com.algaworks.algafoodapi.domain.repository.EstateRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +35,12 @@ public class CityRepositoryImpl implements CityRepository {
 
     @Transactional
     @Override
-    public void delete(City city) {
-        city = search(city.getId());
+    public void delete(Long id) {
+        City city = search(id);
+
+        if (city == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
         manager.remove(city);
     }
 }
