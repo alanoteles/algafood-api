@@ -7,14 +7,19 @@ import com.algaworks.algafoodapi.domain.model.Kitchen;
 import com.algaworks.algafoodapi.domain.model.Restaurant;
 import com.algaworks.algafoodapi.domain.repository.RestaurantRepository;
 import com.algaworks.algafoodapi.domain.service.RestaurantRegisterService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -77,6 +82,41 @@ public class RestaurantController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
+    @PatchMapping("/{restaurantId}")
+    public ResponseEntity<?> updatePartially(@PathVariable Long restaurantId,
+                                                      @RequestBody Map<String, Object> fields) {
+
+        Restaurant currentRestaurant = restaurantRepository.search(restaurantId);
+
+        if( currentRestaurant == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        merge(fields, currentRestaurant);
+
+        return update(restaurantId, currentRestaurant);
+
+    }
+
+
+    private void merge(Map<String, Object> sourceFields, Restaurant targetRestaurant) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Restaurant sourceRestaurant = objectMapper.convertValue(sourceFields, Restaurant.class);
+
+        sourceFields.forEach((propertyName, propertyValue) -> {
+            Field field = ReflectionUtils.findField(Restaurant.class, propertyName);
+            field.setAccessible(true);
+
+            Object newValue = ReflectionUtils.getField(field, sourceRestaurant);
+
+            ReflectionUtils.setField(field, targetRestaurant, newValue);
+        });
+
+    }
+
+
 
     @DeleteMapping("/{restaurantId}")
     public ResponseEntity<Restaurant> delete(@PathVariable Long restaurantId) {
