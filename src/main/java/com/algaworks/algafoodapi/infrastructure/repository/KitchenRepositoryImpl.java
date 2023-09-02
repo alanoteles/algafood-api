@@ -4,13 +4,14 @@ import com.algaworks.algafoodapi.domain.model.Kitchen;
 import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Component
+@Repository
 public class KitchenRepositoryImpl implements KitchenRepository {
 
     @PersistenceContext
@@ -20,6 +21,7 @@ public class KitchenRepositoryImpl implements KitchenRepository {
     public List<Kitchen> list(){
         return manager.createQuery("from Kitchen", Kitchen.class).getResultList();
     }
+
 
     @Transactional
     @Override
@@ -31,6 +33,13 @@ public class KitchenRepositoryImpl implements KitchenRepository {
     public Kitchen search(Long id) {
         return manager.find(Kitchen.class, id);
     }
+
+    @Override
+    public List<Kitchen> searchByName(String name) {
+        return manager.createQuery("from Kitchen where name like :name", Kitchen.class)
+                .setParameter("name", "%" + name + "%").getResultList();
+    }
+
 
     @Transactional
     @Override

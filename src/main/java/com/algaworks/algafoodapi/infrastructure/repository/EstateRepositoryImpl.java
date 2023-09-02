@@ -6,13 +6,14 @@ import com.algaworks.algafoodapi.domain.repository.EstateRepository;
 import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Component
+@Repository
 public class EstateRepositoryImpl implements EstateRepository {
 
     @PersistenceContext
