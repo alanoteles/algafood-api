@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/kitchens")
@@ -27,7 +28,7 @@ public class KitchenController {
 //    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping
     public List<Kitchen> list(){
-        return kitchenRepository.list();
+        return kitchenRepository.findAll();
     };
 
 
@@ -35,11 +36,9 @@ public class KitchenController {
 //    @ResponseStatus(HttpStatus.CREATED)
     @GetMapping("/{kitchenId}")
     public ResponseEntity<Kitchen> search(@PathVariable Long kitchenId) {
-        Kitchen kitchen = kitchenRepository.search(kitchenId);
+        Optional<Kitchen> kitchen = kitchenRepository.findById(kitchenId);
 
-        if (kitchen != null){
-           return ResponseEntity.ok(kitchen);
-        }
+        return kitchen.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 //        return ResponseEntity.status(HttpStatus.OK).body(kitchen);
 //        return ResponseEntity.ok(kitchen);
 
@@ -51,7 +50,6 @@ public class KitchenController {
 //                .headers(headers)
 //                .build();
 
-        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
@@ -64,13 +62,13 @@ public class KitchenController {
     public ResponseEntity<Kitchen> update(@PathVariable Long kitchenId,
                                           @RequestBody Kitchen kitchen){
 
-        Kitchen currentKitchen = kitchenRepository.search(kitchenId);
+        Optional<Kitchen> currentKitchen = kitchenRepository.findById(kitchenId);
 
-        if( currentKitchen != null) {
-            BeanUtils.copyProperties(kitchen, currentKitchen, "id");
-            currentKitchen = kitchenRegisterService.save(currentKitchen);
+        if( currentKitchen.isPresent()) {
+            BeanUtils.copyProperties(kitchen, currentKitchen.get(), "id");
+            Kitchen updatedKitchen = kitchenRegisterService.save(currentKitchen.get());
 
-            return ResponseEntity.ok(currentKitchen);
+            return ResponseEntity.ok(updatedKitchen);
         }
         return ResponseEntity.notFound().build();
     }

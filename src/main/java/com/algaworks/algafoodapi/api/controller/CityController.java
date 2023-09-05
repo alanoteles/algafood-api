@@ -1,5 +1,7 @@
 package com.algaworks.algafoodapi.api.controller;
 
+import com.algaworks.algafoodapi.domain.exception.EntityBeingUsedException;
+import com.algaworks.algafoodapi.domain.exception.EntityNotFoundException;
 import com.algaworks.algafoodapi.domain.model.City;
 import com.algaworks.algafoodapi.domain.model.Estate;
 import com.algaworks.algafoodapi.domain.repository.CityRepository;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cities")
@@ -24,24 +27,21 @@ public class CityController {
 
     @GetMapping
     public List<City> list() {
-        return cityRepository.list();
+        return cityRepository.findAll();
     }
 
     @GetMapping("/{cityId}")
     public ResponseEntity<City> search(@PathVariable Long cityId) {
-        City city = cityRepository.search(cityId);
+        Optional<City> city = cityRepository.findById(cityId);
 
-        if (city != null) {
-            return ResponseEntity.ok(city);
-        }
+        return city.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
-        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public City add(@RequestBody City city){
-        return cityRegisterService.save(city);
+            return cityRegisterService.save(city);
     }
 
 
@@ -49,16 +49,29 @@ public class CityController {
     public ResponseEntity<City> update(@PathVariable Long cityId,
                                        @RequestBody City city){
 
-        City currentCity = cityRepository.search(cityId);
+        Optional<City> currentCity = cityRepository.findById(cityId);
 
-        if(currentCity != null) {
-            BeanUtils.copyProperties(city, currentCity, "id");
-            cityRegisterService.save(currentCity);
+        if(currentCity.isPresent()) {
+            BeanUtils.copyProperties(city, currentCity.get(), "id");
+            City updatedCity = cityRegisterService.save(currentCity.get());
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(updatedCity);
         }
         return ResponseEntity.notFound().build();
     }
 
 
+    @DeleteMapping("/{cityId}")
+    public ResponseEntity<City> delete(@PathVariable Long cityId){
+        try {
+            cityRepository.deleteById(cityId);
+            return ResponseEntity.noContent().build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+
+        } catch (EntityBeingUsedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
 }

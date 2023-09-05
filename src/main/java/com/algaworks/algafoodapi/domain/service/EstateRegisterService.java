@@ -23,7 +23,7 @@ public class EstateRegisterService {
 
     public void delete(Long id) {
         try {
-            estateRepository.delete(id);
+            estateRepository.deleteById(id);
 
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException(

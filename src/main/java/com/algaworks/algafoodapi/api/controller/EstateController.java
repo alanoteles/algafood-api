@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/estates", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,18 +27,16 @@ public class EstateController {
 
     @GetMapping
     public List<Estate> list(){
-        return estateRepository.list();
+        return estateRepository.findAll();
     }
 
 
     @GetMapping("/{estateId}")
     public ResponseEntity<Estate> search(@PathVariable Long estateId) {
-        Estate estate = estateRepository.search(estateId);
+        Optional<Estate> estate = estateRepository.findById(estateId);
 
-        if(estate != null){
-            return ResponseEntity.ok(estate);
-        }
-        return ResponseEntity.notFound().build();
+        return estate.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
 
@@ -51,13 +50,13 @@ public class EstateController {
     public ResponseEntity<Estate> update(@PathVariable Long estateId,
                                          @RequestBody Estate estate) {
 
-        Estate currentEstate = estateRepository.search(estateId);
+        Optional<Estate> currentEstate = estateRepository.findById(estateId);
 
-        if(currentEstate != null) {
-            BeanUtils.copyProperties(estate, currentEstate, "id");
-            estateRegisterService.save(currentEstate);
+        if(currentEstate.isPresent()) {
+            BeanUtils.copyProperties(estate, currentEstate.get(), "id");
+            Estate updatedState = estateRegisterService.save(currentEstate.get());
 
-            return ResponseEntity.ok(currentEstate);
+            return ResponseEntity.ok(updatedState);
         }
         return ResponseEntity.notFound().build();
     }

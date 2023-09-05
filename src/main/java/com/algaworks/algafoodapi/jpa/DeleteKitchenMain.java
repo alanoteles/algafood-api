@@ -20,7 +20,7 @@ public class DeleteKitchenMain {
         Kitchen kitchen = new Kitchen();
         kitchen.setId(1L);
 
-        kitchenRepository.delete(1L);
+        kitchenRepository.deleteById(1L);
 
     }
 }

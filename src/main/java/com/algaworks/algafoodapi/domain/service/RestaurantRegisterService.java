@@ -11,6 +11,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class RestaurantRegisterService {
 
@@ -22,13 +24,11 @@ public class RestaurantRegisterService {
 
     public Restaurant save(Restaurant restaurant) {
         Long kitchenId = restaurant.getKitchen().getId();
-        Kitchen kitchen = kitchenRepository.search(kitchenId);
+        Kitchen kitchen = kitchenRepository.findById(kitchenId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Kitchen code not found - %d", kitchenId)
+                ));
 
-        if( kitchen == null) {
-            throw new EntityNotFoundException(
-                    String.format("Kitchen code not found - %d", kitchenId)
-            );
-        }
         restaurant.setKitchen(kitchen);
 
         return restaurantRepository.save(restaurant);
@@ -38,7 +38,7 @@ public class RestaurantRegisterService {
 
     public void delete(Long id) {
         try {
-            restaurantRepository.delete(id);
+            restaurantRepository.deleteById(id);
 
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException(

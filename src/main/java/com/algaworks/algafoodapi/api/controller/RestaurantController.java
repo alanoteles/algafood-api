@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -35,17 +36,14 @@ public class RestaurantController {
 
     @GetMapping
     public List<Restaurant> list(){
-        return restaurantRepository.list();
+        return restaurantRepository.findAll();
     }
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<Restaurant> search(@PathVariable Long restaurantId){
-        Restaurant restaurant = restaurantRepository.search(restaurantId);
+        Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
 
-        if (restaurant != null) {
-            return ResponseEntity.ok(restaurant);
-        }
-        return ResponseEntity.notFound().build();
+        return restaurant.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 
@@ -68,13 +66,13 @@ public class RestaurantController {
     public ResponseEntity<?> update(@PathVariable Long restaurantId,
                                     @RequestBody Restaurant restaurant) {
         try {
-            Restaurant currentRestaurant = restaurantRepository.search(restaurantId);
+            Optional<Restaurant> currentRestaurant = restaurantRepository.findById(restaurantId);
 
-            if (currentRestaurant != null) {
-                BeanUtils.copyProperties(restaurant, currentRestaurant, "id");
-                currentRestaurant = restaurantRegisterService.save(currentRestaurant);
+            if (currentRestaurant.isPresent()) {
+                BeanUtils.copyProperties(restaurant, currentRestaurant.get(), "id");
+                Restaurant updatedRestaurant = restaurantRegisterService.save(currentRestaurant.get());
 
-                return ResponseEntity.ok(currentRestaurant);
+                return ResponseEntity.ok(updatedRestaurant);
             }
             return ResponseEntity.notFound().build();
 
@@ -88,15 +86,15 @@ public class RestaurantController {
     public ResponseEntity<?> updatePartially(@PathVariable Long restaurantId,
                                                       @RequestBody Map<String, Object> fields) {
 
-        Restaurant currentRestaurant = restaurantRepository.search(restaurantId);
+        Optional<Restaurant> currentRestaurant = restaurantRepository.findById(restaurantId);
 
-        if( currentRestaurant == null) {
+        if( currentRestaurant.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        merge(fields, currentRestaurant);
+        merge(fields, currentRestaurant.get());
 
-        return update(restaurantId, currentRestaurant);
+        return update(restaurantId, currentRestaurant.get());
 
     }
 

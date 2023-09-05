@@ -8,6 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SearchKitchenMain {
     public static void main(String[] args) {
@@ -17,8 +18,9 @@ public class SearchKitchenMain {
 
         KitchenRepository kitchenRepository = applicationContext.getBean(KitchenRepository.class);
 
-        Kitchen kitchen = kitchenRepository.search(2L);
+        Optional<Kitchen> kitchen = kitchenRepository.findById(2L);
 
-        System.out.printf("%d - %s\n", kitchen.getId(), kitchen.getName());
+        kitchen.ifPresent(value -> System.out.printf("%d - %s\n", value.getId(), value.getName()));
+
     }
 }

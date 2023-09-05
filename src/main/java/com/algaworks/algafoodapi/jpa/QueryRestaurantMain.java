@@ -17,7 +17,7 @@ public class QueryRestaurantMain {
 
         RestaurantRepository restaurantRepository = applicationContext.getBean(RestaurantRepository.class);
 
-        List<Restaurant> restaurants = restaurantRepository.list();
+        List<Restaurant> restaurants = restaurantRepository.findAll();
 
         for(Restaurant restaurant : restaurants) {
 //            System.out.println(restaurant.getName());
