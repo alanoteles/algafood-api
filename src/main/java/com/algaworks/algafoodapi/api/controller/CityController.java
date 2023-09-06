@@ -64,7 +64,7 @@ public class CityController {
     @DeleteMapping("/{cityId}")
     public ResponseEntity<City> delete(@PathVariable Long cityId){
         try {
-            cityRepository.deleteById(cityId);
+            cityRegisterService.delete(cityId);
             return ResponseEntity.noContent().build();
 
         } catch (EntityNotFoundException e) {
