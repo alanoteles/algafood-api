@@ -8,6 +8,10 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -20,32 +24,19 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryQueries {
 
     @Override
     public List<Restaurant> find(String name, BigDecimal minFee, BigDecimal maxFee){
-//        var jpql = "from Restaurant where name like :name " +
-//                "and deliveryFee between :minFee and :maxFee";
 
-        var jpql = new StringBuilder();
-        jpql.append("from Restaurant where 0 = 0 ");
-        var queryParams = new HashMap<String, Object>();
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
 
-        if (StringUtils.hasLength(name)) {
-            jpql.append("and name like :name ");
-            queryParams.put("name", "%" + name + "%");
-        }
+        CriteriaQuery<Restaurant> criteria = builder.createQuery(Restaurant.class);
+        Root<Restaurant> root = criteria.from(Restaurant.class);
 
-        if (minFee != null) {
-            jpql.append("and deliveryFee >= :minFee ");
-            queryParams.put("minFee", minFee);
-        }
+        Predicate namePredicate = builder.like(root.get("name"), "%" + name + "%");
+        Predicate minFeePredicate = builder.greaterThanOrEqualTo(root.get("deliveryFee"), minFee);
+        Predicate maxFeePredicate = builder.lessThanOrEqualTo(root.get("deliveryFee"), maxFee);
 
-        if (maxFee != null) {
-            jpql.append("and deliveryFee <= :maxFee ");
-            queryParams.put("maxFee", maxFee);
-        }
+        criteria.where(namePredicate, minFeePredicate, maxFeePredicate);
 
-
-        TypedQuery<Restaurant> query =  manager.createQuery(jpql.toString(), Restaurant.class);
-
-        queryParams.forEach((key, value) -> query.setParameter(key, value));
+        TypedQuery<Restaurant> query = manager.createQuery(criteria);
 
         return query.getResultList();
     }
