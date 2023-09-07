@@ -4,6 +4,8 @@ import com.algaworks.algafoodapi.domain.model.Kitchen;
 import com.algaworks.algafoodapi.domain.model.Restaurant;
 import com.algaworks.algafoodapi.domain.repository.KitchenRepository;
 import com.algaworks.algafoodapi.domain.repository.RestaurantRepository;
+import com.algaworks.algafoodapi.infrastructure.spec.RestaurantWithFreeDeliverySpec;
+import com.algaworks.algafoodapi.infrastructure.spec.RestaurantWithLikeNameSpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,5 +67,14 @@ public class TestController {
     @GetMapping("/name-delivery-fee")
     public List<Restaurant> deliveryFee(String name, BigDecimal minFee, BigDecimal maxFee) {
         return restaurantRepository.find(name, minFee, maxFee);
+    }
+
+    @GetMapping("/free-delivery")
+    public List<Restaurant> freeDelivery(String name) {
+        var withFreeDelivery = new RestaurantWithFreeDeliverySpec();
+        var withLikeName = new RestaurantWithLikeNameSpec(name);
+
+        return restaurantRepository.findAll(withFreeDelivery.and(withLikeName));
+
     }
 }
